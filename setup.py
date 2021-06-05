@@ -17,7 +17,8 @@ setup(
     packages=find_packages(where='src'),
     python_requires='>=3.8, <4',
     install_requires=[
-        'Django==3.2.4'
+        'Django==3.2.4',
+        'Pillow==8.2.0',
     ],
     extras_require={
         'dev': [],
