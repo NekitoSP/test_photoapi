@@ -19,6 +19,7 @@ setup(
     install_requires=[
         'Django==3.2.4',
         'Pillow==8.2.0',
+        'djangorestframework==3.12.4'
     ],
     extras_require={
         'dev': [],
