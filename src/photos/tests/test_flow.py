@@ -1,8 +1,9 @@
 from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework import serializers
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.exceptions import ValidationError
+from rest_framework.permissions import AllowAny
 from rest_framework.test import APIRequestFactory
 from rest_framework.utils import json
 
@@ -23,6 +24,7 @@ class TestFlowResponseSerializer(serializers.Serializer):
 
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 @flow(TestFlowRequestSerializer, TestFlowResponseSerializer)
 def test_flow(request, serializer: TestFlowRequestSerializer = None):
     value = serializer.validated_data['value']
@@ -54,7 +56,7 @@ class TestFlow(TestCase):
         }
         self.assertDictEqual(expected_response, actual_response, 'Ответ от test_flow не совпадает с ожидаемым')
 
-    def test_flow_failure(self):
+    def test_flow_failure_validation(self):
         # Arrange
         factory = APIRequestFactory()
         request = factory.post('/', {'value': 1}, format='json')
@@ -72,3 +74,43 @@ class TestFlow(TestCase):
             }
         }
         self.assertDictEqual(expected_response, actual_response, 'Ответ от test_flow не совпадает с ожидаемым')
+
+    def test_flow_failure_invalid_data(self):
+        # Arrange
+        factory = APIRequestFactory()
+        request = factory.post('/', None, format='json')
+
+        # Act
+        response = test_flow(request)
+
+        # Assert
+        actual_response = json.loads(response.content)
+        expected_response = {
+           'success': False,
+           'result': None,
+           'errors': {
+               'value': ['This field is required.']
+           }
+        }
+        self.assertDictEqual(expected_response, actual_response, 'Ответ от test_flow не совпадает с ожидаемым')
+
+    def test_flow_failure_invalid_http_method(self):
+        # Arrange
+        factory = APIRequestFactory()
+        request = factory.get('/', None, format='json')
+
+        # Act
+        response = test_flow(request)
+
+        # Assert
+
+        # actual_response = json.loads(response.content)
+        # expected_response = {
+        #    'success': False,
+        #    'result': None,
+        #    'errors': {
+        #        'value': ['This field is required.']
+        #    }
+        # }
+        self.assertEqual(405, response.status_code, 'Код ответа сервера не соответствует ожидаемому')
+        # self.assertDictEqual(expected_response, actual_response, 'Ответ от test_flow не совпадает с ожидаемым')
