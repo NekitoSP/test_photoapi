@@ -130,5 +130,5 @@ REST_FRAMEWORK = {
         # 'rest_framework.authentication.SessionAuthentication',
         'photos.api.utils.csrf_exempt_session_authentication.CsrfExemptSessionAuthentication'
     ],
-    'EXCEPTION_HANDLER': 'photos.api.utils.error_handler.custom_exception_handler',
+    # 'EXCEPTION_HANDLER': 'photos.api.utils.error_handler.custom_exception_handler',
 }
