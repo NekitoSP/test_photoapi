@@ -1,0 +1,20 @@
+version: "3.9"
+services:
+  backend:
+    restart: always
+    build: ./src
+    volumes:
+      - media:/media
+      - db:/db
+    ports:
+      - "8000:8000"
+    expose:
+      - 8000
+    command: bash -c "./runserver.sh"
+  tests:
+    build: ./src
+    command: bash -c "./runtests.sh"
+
+volumes:
+  media:
+  db:

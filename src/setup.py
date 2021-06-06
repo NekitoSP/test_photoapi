@@ -1,20 +1,15 @@
 from setuptools import setup, find_packages
 import pathlib
 
-root = pathlib.Path(__file__).parent.resolve()
-
-long_description = (root / 'README.md').read_text(encoding='utf-8')
+root = pathlib.Path(__file__).parent.parent.resolve()
 
 setup(
     name='photoapi',
     version='0.0.1',
-    long_description=long_description,
-    long_description_content_type='text/markdown',
     url='https://github.com/NekitoSP/test_photoapi',
     author='Nikita Permin',
     author_email='nekitosp@gmail.com',
-    package_dir={'': 'src'},
-    packages=find_packages(where='src'),
+    packages=find_packages(),
     python_requires='>=3.8, <4',
     install_requires=[
         'Django==3.2.4',

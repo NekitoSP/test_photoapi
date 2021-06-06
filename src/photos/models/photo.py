@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Q
-from django.utils.datetime_safe import datetime
+from django.utils import timezone
 
 
 class PhotoQuerySet(models.QuerySet):
@@ -50,7 +50,7 @@ class Photo(models.Model):
     deleted_date = models.DateTimeField("Дата удаления", auto_now=False, default=None, blank=True, null=True)
 
     def soft_delete(self):
-        self.deleted_date = datetime.now()
+        self.deleted_date = timezone.now()
 
     @property
     def is_deleted(self):
