@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+from django.urls import reverse_lazy
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
@@ -37,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'photos',
     'rest_framework',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
@@ -131,4 +134,19 @@ REST_FRAMEWORK = {
         'photos.api.utils.csrf_exempt_session_authentication.CsrfExemptSessionAuthentication'
     ],
     # 'EXCEPTION_HANDLER': 'photos.api.utils.error_handler.custom_exception_handler',
+}
+
+SWAGGER_SETTINGS = {
+    'LOGIN_URL': reverse_lazy('admin:login'),
+    'LOGOUT_URL': '/admin/logout',
+    'PERSIST_AUTH': True,
+    'REFETCH_SCHEMA_WITH_AUTH': True,
+    'REFETCH_SCHEMA_ON_LOGOUT': True,
+
+    'DEFAULT_INFO': 'photoapi.urls.swagger_info',
+
+    "DEFAULT_PAGINATOR_INSPECTORS": [
+        'drf_yasg.inspectors.DjangoRestResponsePagination',
+        'drf_yasg.inspectors.CoreAPICompatInspector',
+    ]
 }

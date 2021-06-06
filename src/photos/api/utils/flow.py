@@ -3,7 +3,6 @@ from typing import Dict
 
 from django.http import JsonResponse
 from rest_framework import serializers
-from rest_framework.exceptions import APIException
 from rest_framework.request import Request
 
 from photos.api.utils.mixins import UserMixin, RequestMixin
@@ -27,6 +26,17 @@ class FlowJsonResponse(JsonResponse):
         return FlowJsonResponse(success=False, errors=errors)
 
 
+def flow_schema_wrap(request_cls: Type[serializers.BaseSerializer], response_cls: Type[serializers.BaseSerializer]):
+    class ResponseWrapper(serializers.Serializer):
+        class Meta:
+            ref_name = None
+        success = serializers.BooleanField()
+        result = response_cls()
+        errors = request_cls()
+
+    return ResponseWrapper
+
+
 def flow(
         request_serializer_cls: Type[serializers.BaseSerializer],
         response_serializer_cls: Type[serializers.BaseSerializer] = None,
@@ -45,6 +55,7 @@ def flow(
     :param data: фабрика для параметра data, которое прокидывается в конструктор request_serializer_cls
     :return:
     """
+
     def default_data(request: Request):
         return request.data
 

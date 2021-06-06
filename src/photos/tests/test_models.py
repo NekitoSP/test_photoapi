@@ -5,6 +5,10 @@ from photos.models import Photo
 
 
 class TestPhotos(TestCase):
+    """
+    Проверяет корректность работы методов кастомного queryset'a для модели `Photo`
+    """
+
     def setUp(self) -> None:
         self.user = User.objects.create_user(username='test', password='1')
 

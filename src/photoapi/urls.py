@@ -17,8 +17,26 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
+from drf_yasg import openapi
+
+from drf_yasg.views import get_schema_view
+from rest_framework.permissions import AllowAny
+
+swagger_info = openapi.Info(
+    title="PhotoApi",
+    default_version='v1',
+    description="""Проект текстового задания""",  # noqa
+    contact=openapi.Contact(email="nekitosp@gmail.com"),
+)
+
+SchemaView = get_schema_view(
+    # validators=['ssv', 'flex'],
+    public=True,
+    permission_classes=[AllowAny],
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('swagger/', SchemaView.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('api/photos/', include('photos.api.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

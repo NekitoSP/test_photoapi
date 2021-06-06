@@ -1,17 +1,21 @@
 from random import randrange
 
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import serializers
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, parser_classes
 from rest_framework.exceptions import ValidationError, PermissionDenied
+from rest_framework.parsers import MultiPartParser
 
 from photos.api.serializers import PhotoSerializer
-from photos.api.utils.flow import flow
+from photos.api.utils.flow import flow, flow_schema_wrap
 from photos.models import Photo
 from photos.permissions import CanAddPhotoPermission
 
 
 class Request_UploadPhotoSerializer(serializers.ModelSerializer):
     class Meta:
+        ref_name = None
         model = Photo
         fields = ('photo', 'comment')
 
@@ -29,11 +33,22 @@ class Request_UploadPhotoSerializer(serializers.ModelSerializer):
 
 
 class Response_UploadPhotoSerializer(PhotoSerializer):
-    ...
+    class Meta(PhotoSerializer.Meta):
+        ref_name = None
 
 
+@swagger_auto_schema(
+    method='post',
+    operation_description="Загрузка изображения",
+    request_body=Request_UploadPhotoSerializer,
+    responses={
+        200: openapi.Response('Результат загрузки изображения', flow_schema_wrap(Request_UploadPhotoSerializer, Response_UploadPhotoSerializer)),
+    },
+    tags=['Photos']
+)
 @api_view(['POST'])
 @permission_classes([CanAddPhotoPermission])
+@parser_classes([MultiPartParser])
 @flow(Request_UploadPhotoSerializer, Response_UploadPhotoSerializer)
 def upload_photo(request, serializer: Request_UploadPhotoSerializer):
     instance = Photo.objects.create(
